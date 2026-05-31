@@ -46,10 +46,10 @@ def inicializar_sistema():
     mapa.cargar_mapa(MAPA_FILE)
 
     print('=' * 50)
-    print('🚀 Sistema de Logística de Última Milla (core)')
-    print(f'   📦 Productos cargados: {arbol.tamano}')
-    print(f'   📋 Órdenes pendientes: {cola.pendientes}')
-    print(f'   🗺️  Nodos del mapa:     {len(mapa.obtener_nodos())}')
+    print('Sistema de Logística de Última Milla (core)')
+    print(f'   Productos cargados: {arbol.tamano}')
+    print(f'   Órdenes pendientes: {cola.pendientes}')
+    print(f'   Nodos del mapa:     {len(mapa.obtener_nodos())}')
     print('=' * 50)
 
 

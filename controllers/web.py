@@ -52,7 +52,7 @@ def buscar_producto():
     try:
         id_buscar = int(request.form.get('id', 0))
     except ValueError:
-        flash('⚠️ El ID debe ser un número entero.', 'warning')
+        flash('El ID debe ser un número entero.', 'warning')
         return redirect(url_for('productos'))
 
     inicio = time.perf_counter()
@@ -63,9 +63,9 @@ def buscar_producto():
     todos_productos = arbol.obtener_todos()
 
     if producto:
-        flash(f"✅ Encontrado: {producto.nombre} — ${producto.precio} — Stock: {producto.stock} (Búsqueda: {tiempo_ms:.4f} ms)", 'success')
+        flash(f"Encontrado: {producto.nombre} — ${producto.precio} — Stock: {producto.stock} (Búsqueda: {tiempo_ms:.4f} ms)", 'success')
     else:
-        flash(f"❌ Producto con ID {id_buscar} no encontrado. (Búsqueda: {tiempo_ms:.4f} ms)", 'danger')
+        flash(f"Producto con ID {id_buscar} no encontrado. (Búsqueda: {tiempo_ms:.4f} ms)", 'danger')
 
     return render_template('productos.html', productos=todos_productos, resultado=producto, tiempo_busqueda=tiempo_ms, id_buscado=id_buscar)
 
@@ -86,16 +86,16 @@ def nueva_orden():
         destino = request.form.get('destino', '')
         prioridad = int(request.form.get('prioridad', 1))
     except ValueError:
-        flash('⚠️ Datos inválidos. Verifica los campos.', 'warning')
+        flash('Datos inválidos. Verifica los campos.', 'warning')
         return redirect(url_for('ordenes'))
 
     producto = arbol.buscar(producto_id)
     if not producto:
-        flash(f'❌ Producto con ID {producto_id} no existe.', 'danger')
+        flash(f'Producto con ID {producto_id} no existe.', 'danger')
         return redirect(url_for('ordenes'))
 
     if producto.stock < cantidad:
-        flash(f'⚠️ Stock insuficiente. Disponible: {producto.stock}, Solicitado: {cantidad}.', 'warning')
+        flash(f'Stock insuficiente. Disponible: {producto.stock}, Solicitado: {cantidad}.', 'warning')
         return redirect(url_for('ordenes'))
 
     historial = cola.ver_historial()
@@ -106,8 +106,8 @@ def nueva_orden():
     orden = Orden(id=nuevo_id, producto_id=producto_id, cantidad=cantidad, destino=destino, prioridad=prioridad)
 
     cola.agregar_orden(orden)
-    tipo = "🚀 Express" if prioridad == 0 else "📦 Normal"
-    flash(f'✅ Orden #{nuevo_id} agregada ({tipo}) — {producto.nombre} x{cantidad} → {destino}', 'success')
+    tipo = "Express" if prioridad == 0 else "Normal"
+    flash(f'Orden #{nuevo_id} agregada ({tipo}) — {producto.nombre} x{cantidad} -> {destino}', 'success')
     return redirect(url_for('ordenes'))
 
 
@@ -120,7 +120,7 @@ def despacho():
 @app.route('/despacho/siguiente', methods=['POST'])
 def despachar_siguiente():
     if cola.esta_vacia():
-        flash('⚠️ No hay órdenes pendientes para despachar.', 'warning')
+        flash('No hay órdenes pendientes para despachar.', 'warning')
         return redirect(url_for('despacho'))
 
     orden = cola.despachar_siguiente()
@@ -129,7 +129,7 @@ def despachar_siguiente():
     if producto:
         exito = arbol.actualizar_stock(orden.producto_id, orden.cantidad)
         if not exito:
-            flash(f'⚠️ Stock insuficiente para {producto.nombre}. Despacho registrado pero stock no actualizado.', 'warning')
+            flash(f'Stock insuficiente para {producto.nombre}. Despacho registrado pero stock no actualizado.', 'warning')
 
     costo, camino, detalles = mapa.calcular_ruta('Almacen_Central', orden.destino, 'gasolina')
 
@@ -156,7 +156,7 @@ def deshacer_despacho():
     orden = cola.deshacer_ultimo_despacho()
 
     if orden is None:
-        flash('⚠️ No hay despachos para deshacer.', 'warning')
+        flash('No hay despachos para deshacer.', 'warning')
         return redirect(url_for('historial'))
 
     exito = arbol.restaurar_stock(orden.producto_id, orden.cantidad)
@@ -164,9 +164,9 @@ def deshacer_despacho():
     nombre = producto.nombre if producto else f'ID:{orden.producto_id}'
 
     if exito:
-        flash(f'↩️ Despacho deshecho: Orden #{orden.id} — {nombre} x{orden.cantidad}. Stock restaurado.', 'success')
+        flash(f'Despacho deshecho: Orden #{orden.id} — {nombre} x{orden.cantidad}. Stock restaurado.', 'success')
     else:
-        flash(f'↩️ Despacho deshecho: Orden #{orden.id}, pero no se pudo restaurar el stock.', 'warning')
+        flash(f'Despacho deshecho: Orden #{orden.id}, pero no se pudo restaurar el stock.', 'warning')
 
     return redirect(url_for('historial'))
 
@@ -174,7 +174,7 @@ def deshacer_despacho():
 @app.route('/guardar', methods=['POST'])
 def guardar():
     guardar_estado()
-    flash('💾 Datos guardados exitosamente en archivos JSON.', 'success')
+    flash('Datos guardados exitosamente en archivos JSON.', 'success')
     return redirect(url_for('index'))
 
 
@@ -194,7 +194,7 @@ def calcular_ruta_mapa():
     estrategia = request.form.get('estrategia', 'gasolina')
 
     if not destino:
-        flash('⚠️ Selecciona un destino.', 'warning')
+        flash('Selecciona un destino.', 'warning')
         return redirect(url_for('ver_mapa'))
 
     costo, camino, detalles = mapa.calcular_ruta(origen, destino, estrategia)
@@ -208,11 +208,11 @@ def calcular_ruta_mapa():
         if estrategia == 'tiempo':
             origen_texto = origen.replace('_', ' ')
             destino_texto = destino.replace('_', ' ')
-            flash(f'🗺️ Ruta directa más rápida: {origen_texto} → {destino_texto} (Tiempo estimado: {costo} {tipo_str})', 'success')
+            flash(f'Ruta directa más rápida: {origen_texto} -> {destino_texto} (Tiempo estimado: {costo} {tipo_str})', 'success')
         else:
-            ruta_str = ' → '.join([n.replace('_', ' ') for n in camino])
-            flash(f'🗺️ Ruta óptima ({estrategia}): {ruta_str} (Costo total: {costo} {tipo_str})', 'success')
+            ruta_str = ' -> '.join([n.replace('_', ' ') for n in camino])
+            flash(f'Ruta óptima ({estrategia}): {ruta_str} (Costo total: {costo} {tipo_str})', 'success')
     else:
-        flash(f'❌ No se encontró ruta de {origen} a {destino}.', 'danger')
+        flash(f'No se encontró ruta de {origen} a {destino}.', 'danger')
 
     return render_template('mapa.html', nodos=nodos, aristas=aristas, coordenadas=coordenadas, productos=productos_dicts, ruta_camino=camino, ruta_costo=costo, ruta_detalles=detalles, origen_seleccionado=origen, destino_seleccionado=destino, estrategia_seleccionada=estrategia)

@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>🚀 Despacho de Órdenes</h1>
+    <h1>Despacho de Órdenes</h1>
     <p class="page-subtitle">Cola de Prioridad → Dijkstra — Ruta de menor costo de combustible</p>
 </div>
 
@@ -12,27 +12,27 @@
 <!-- Resultado del Despacho -->
 <div class="card dispatch-result">
     <div class="card-header">
-        <h2>✅ Orden Despachada</h2>
+        <h2>Orden Despachada</h2>
     </div>
     <div class="card-body">
         <div class="dispatch-summary">
             <div class="dispatch-info">
                 <div class="dispatch-order-header">
                     <span class="priority-badge {% if orden_despachada.prioridad == 0 %}priority-express{% else %}priority-normal{% endif %}">
-                        {% if orden_despachada.prioridad == 0 %}🚀 EXPRESS{% else %}📦 Normal{% endif %}
+                        {% if orden_despachada.prioridad == 0 %}EXPRESS{% else %}Normal{% endif %}
                     </span>
                     <strong>Orden #{{ orden_despachada.id }}</strong>
                 </div>
                 {% if producto_despachado %}
                 <p class="dispatch-product">{{ producto_despachado.nombre }} × {{ orden_despachada.cantidad }}</p>
                 {% endif %}
-                <p class="dispatch-destination">📍 Destino: <strong>{{ orden_despachada.destino|replace('_', ' ') }}</strong></p>
+                <p class="dispatch-destination">Destino: <strong>{{ orden_despachada.destino|replace('_', ' ') }}</strong></p>
             </div>
         </div>
 
         <!-- Ruta Calculada -->
         <div class="route-result">
-            <h3>🗺️ Ruta Óptima (Dijkstra)</h3>
+            <h3>Ruta Óptima (Dijkstra)</h3>
 
             {% if ruta_camino %}
             <div class="route-path">
@@ -62,7 +62,7 @@
                         <span>{{ tramo.hasta|replace('_', ' ') }}</span>
                     </div>
                     <div class="tramo-meta">
-                        <span class="tramo-cost">⛽ {{ tramo.costo }} u.</span>
+                        <span class="tramo-cost">{{ tramo.costo }} u.</span>
                         <span class="tramo-desc">{{ tramo.descripcion }}</span>
                     </div>
                 </div>
@@ -72,7 +72,6 @@
 
             {% else %}
             <div class="empty-state">
-                <span class="empty-icon">❌</span>
                 <p>No se encontró ruta hacia {{ orden_despachada.destino|replace('_', ' ') }}</p>
             </div>
             {% endif %}
@@ -84,15 +83,15 @@
 <!-- Órdenes pendientes + botón despachar -->
 <div class="card">
     <div class="card-header">
-        <h2>📬 Cola de Prioridad</h2>
+        <h2>Cola de Prioridad</h2>
         <span class="card-badge">{{ ordenes|length }} pendientes</span>
     </div>
     <div class="card-body">
         {% if ordenes %}
-        <div class="dispatch-action">
+                <div class="dispatch-action">
             <form action="{{ url_for('despachar_siguiente') }}" method="POST">
                 <button type="submit" class="btn btn-dispatch">
-                    🚀 Despachar Orden Más Urgente
+                    Despachar Orden Más Urgente
                 </button>
             </form>
             <p class="dispatch-hint">Se despachará la orden con mayor prioridad (Express primero, luego FIFO)</p>
@@ -106,22 +105,21 @@
                 {% endif %}
                 <div class="order-priority">
                     {% if orden.prioridad == 0 %}
-                    <span class="priority-badge priority-express">🚀 EXPRESS</span>
+                    <span class="priority-badge priority-express">EXPRESS</span>
                     {% else %}
-                    <span class="priority-badge priority-normal">📦 Normal</span>
+                    <span class="priority-badge priority-normal">Normal</span>
                     {% endif %}
                 </div>
                 <div class="order-details">
                     <strong>Orden #{{ orden.id }}</strong>
                     <span class="order-meta">Producto ID: {{ orden.producto_id }} — x{{ orden.cantidad }}</span>
-                    <span class="order-dest">📍 {{ orden.destino|replace('_', ' ') }}</span>
+                    <span class="order-dest">{{ orden.destino|replace('_', ' ') }}</span>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
         <div class="empty-state">
-            <span class="empty-icon">📭</span>
             <p>No hay órdenes pendientes para despachar</p>
             <a href="{{ url_for('ordenes') }}" class="btn btn-secondary">Crear nueva orden</a>
         </div>

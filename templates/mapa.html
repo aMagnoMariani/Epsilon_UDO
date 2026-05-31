@@ -43,20 +43,18 @@
             <div class="strategy-options">
                 <label class="strategy-option {% if not estrategia_seleccionada or estrategia_seleccionada == 'gasolina' %}active{% endif %}">
                     <input type="radio" name="estrategia" value="gasolina" {% if not estrategia_seleccionada or estrategia_seleccionada == 'gasolina' %}checked{% endif %}>
-                    <span class="strategy-icon">⛽</span>
                     <span class="strategy-text">Ahorro de gasolina</span>
                 </label>
                 <label class="strategy-option {% if estrategia_seleccionada == 'tiempo' %}active{% endif %}">
                     <input type="radio" name="estrategia" value="tiempo" {% if estrategia_seleccionada == 'tiempo' %}checked{% endif %}>
-                    <span class="strategy-icon">⏱️</span>
                     <span class="strategy-text">Ruta más rápida</span>
                 </label>
             </div>
         </div>
 
         <div class="strategy-help">
-            <div class="strategy-badge strategy-economy">⛽ Ahorro de gasolina</div>
-            <div class="strategy-badge strategy-fast">⚡ Ruta directa</div>
+            <div class="strategy-badge strategy-economy">Ahorro de gasolina</div>
+            <div class="strategy-badge strategy-fast">Ruta directa</div>
             <p>
                 {% if estrategia_seleccionada == 'tiempo' %}
                     Se calcula una ruta directa sin paradas intermedias entre origen y destino.
@@ -147,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dashArray: isRoute ? null : '6, 8'
             }).addTo(map);
 
-            polyline.bindTooltip(`⛽ ${arista.costo_gasolina} | ⏱️ ${arista.tiempo}m`, {
+            polyline.bindTooltip(`${arista.costo_gasolina} | ${arista.tiempo}m`, {
                 className: 'minimal-tooltip', sticky: true
             });
         }
@@ -216,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             circle.bindPopup(popupContent, { maxWidth: 320 });
         } else {
-            circle.bindPopup("<div style='padding:5px;'><strong>🏭 Almacén Central</strong><br>Punto base de operaciones en Maturín.</div>");
+            circle.bindPopup("<div style='padding:5px;'><strong>Almacén Central</strong><br>Punto base de operaciones en Maturín.</div>");
         }
     });
 

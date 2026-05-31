@@ -4,21 +4,21 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>🕐 Historial de Despachos</h1>
+    <h1>Historial de Despachos</h1>
     <p class="page-subtitle">Pila LIFO — Deshacer el último despacho restaura stock</p>
 </div>
 
 <!-- Botón Deshacer -->
 <div class="card">
     <div class="card-header">
-        <h2>↩️ Botón de Pánico</h2>
+        <h2>Botón de Pánico</h2>
     </div>
     <div class="card-body">
         {% if historial %}
         <div class="undo-section">
             <form action="{{ url_for('deshacer_despacho') }}" method="POST">
                 <button type="submit" class="btn btn-danger btn-undo">
-                    ↩️ Deshacer Último Despacho
+                    Deshacer Último Despacho
                 </button>
             </form>
             <p class="undo-hint">
@@ -27,7 +27,6 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <span class="empty-icon">✨</span>
             <p>No hay despachos para deshacer</p>
         </div>
         {% endif %}
@@ -37,7 +36,7 @@
 <!-- Historial -->
 <div class="card">
     <div class="card-header">
-        <h2>📜 Pila de Historial</h2>
+        <h2>Pila de Historial</h2>
         <span class="card-badge">{{ historial|length }} despachos</span>
     </div>
     <div class="card-body">
@@ -46,22 +45,22 @@
             {% for item in historial %}
             <div class="history-item {% if loop.first %}history-top{% endif %}">
                 {% if loop.first %}
-                <span class="stack-badge">⬆️ TOPE DE PILA</span>
+                <span class="stack-badge">TOPE DE PILA</span>
                 {% endif %}
                 <div class="history-header">
                     <span class="priority-badge {% if item.orden.prioridad == 0 %}priority-express{% else %}priority-normal{% endif %}">
-                        {% if item.orden.prioridad == 0 %}🚀 EXPRESS{% else %}📦 Normal{% endif %}
+                        {% if item.orden.prioridad == 0 %}EXPRESS{% else %}Normal{% endif %}
                     </span>
                     <strong>Orden #{{ item.orden.id }}</strong>
                 </div>
                 <div class="history-details">
                     {% if item.producto %}
-                    <span>🏷️ {{ item.producto.nombre }}</span>
+                    <span>{{ item.producto.nombre }}</span>
                     {% else %}
-                    <span>🏷️ Producto ID: {{ item.orden.producto_id }}</span>
+                    <span>Producto ID: {{ item.orden.producto_id }}</span>
                     {% endif %}
-                    <span>📦 Cantidad: {{ item.orden.cantidad }}</span>
-                    <span>📍 {{ item.orden.destino|replace('_', ' ') }}</span>
+                    <span>Cantidad: {{ item.orden.cantidad }}</span>
+                    <span>{{ item.orden.destino|replace('_', ' ') }}</span>
                 </div>
                 <div class="history-stack-pos">
                     Posición en pila: {{ historial|length - loop.index0 }}
@@ -71,7 +70,6 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <span class="empty-icon">📭</span>
             <p>Aún no se han despachado órdenes</p>
             <a href="{{ url_for('despacho') }}" class="btn btn-secondary">Ir a Despacho</a>
         </div>

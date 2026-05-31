@@ -17,7 +17,7 @@
                        required
                        min="1">
                 <button type="submit" class="ml-search-btn">
-                    🔍
+                    Buscar
                 </button>
             </form>
         </div>
@@ -112,8 +112,7 @@
             {% for p in productos %}
             <div class="ml-product-card {% if resultado and p.id == resultado.id %}ml-product-highlight{% endif %}">
                 <div class="ml-product-image">
-                    <div class="ml-product-placeholder">
-                        📦
+                        <div class="ml-product-placeholder">
                     </div>
                 </div>
                 <div class="ml-product-info">
@@ -130,7 +129,6 @@
                         {% endif %}
                     </div>
                     <div class="ml-product-shipping">
-                        <span class="ml-shipping-icon">🚚</span>
                         <span>Envío disponible</span>
                     </div>
                 </div>
@@ -143,10 +141,10 @@
     {% if resultado %}
     <div class="ml-search-result-overlay">
         <div class="ml-search-result-card">
-            <div class="ml-search-result-header">
-                <span class="ml-result-badge ml-result-success">✅ Producto encontrado</span>
+                <div class="ml-search-result-header">
+                <span class="ml-result-badge ml-result-success">Producto encontrado</span>
                 {% if tiempo_busqueda is defined %}
-                <span class="ml-result-time">⚡ {{ "%.4f"|format(tiempo_busqueda) }} ms</span>
+                <span class="ml-result-time">Tiempo: {{ "%.4f"|format(tiempo_busqueda) }} ms</span>
                 {% endif %}
                 <button class="ml-close-result" onclick="this.closest('.ml-search-result-overlay').remove()">×</button>
             </div>
@@ -174,9 +172,9 @@
     <div class="ml-search-result-overlay">
         <div class="ml-search-result-card ml-result-error">
             <div class="ml-search-result-header">
-                <span class="ml-result-badge ml-result-error-badge">❌ No encontrado</span>
+                <span class="ml-result-badge ml-result-error-badge">No encontrado</span>
                 {% if tiempo_busqueda is defined %}
-                <span class="ml-result-time">⚡ {{ "%.4f"|format(tiempo_busqueda) }} ms</span>
+                <span class="ml-result-time">Tiempo: {{ "%.4f"|format(tiempo_busqueda) }} ms</span>
                 {% endif %}
                 <button class="ml-close-result" onclick="this.closest('.ml-search-result-overlay').remove()">×</button>
             </div>

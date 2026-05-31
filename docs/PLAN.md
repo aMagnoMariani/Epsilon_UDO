@@ -8,4 +8,4 @@
 | Arbol 2-3 |
 | Arbol B |
 | Grafo |
-| Hashing |
+| Hashing | En el modulo de inventario |

@@ -1,0 +1,29 @@
+# --- Entorno Virtual de Python ---
+env/
+venv/
+ENV/
+.env/
+.venv/
+
+# --- Caché de Python ---
+**/_pycache_/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# --- Variables de Entorno - Secretos ---
+.env
+.flaskenv
+instance/
+.webassets-cache
+
+# --- Archivos del Sistema Operativo ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Archivos de Base de Datos y Datos Locales ---
+*.db
+*.sqlite3
+*.log

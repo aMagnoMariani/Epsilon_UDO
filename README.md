@@ -21,36 +21,37 @@ Lenguaje y herramientas
 Integrantes
 -----------
 - Alejandro Mariani
-- Jose Felix Cedeño
-- Diana Yegüez 
+- José Félix Cedeño
+- Diana Yegüez
+- Victoria Santodomingo<br>
 
 Instalación rápida
 ------------------
 1. Crear y activar un entorno virtual:
 
-```bash
+``` bash
 python -m venv .venv
-source .venv/bin/activate
+origen .venv/bin/activate
 ```
 
 2. Instalar dependencias:
 
-```bash
+``` bash
 pip install -r requirements.txt
 ```
 
 3. Iniciar la aplicación en desarrollo:
 
-```bash
-python app.py
+``` bash
+aplicación python.py
 ```
 
 Archivos relevantes
 ------------------
-- `app.py`: Rutas y orquestación del sistema (Flask).
-- `models.py`: Clases `Producto` y `Orden`.
-- `persistencia.py`: Lectura/escritura JSON.
-- `arbol_inventario.py`: Árbol Binario de Búsqueda para productos.
+-  ` app.py ` : Rutas y orquestación del sistema (Flask).
+-`models.py`  : Clases` Producto` y ` Orden` .​​​​​
+-  ` persistencia.py ` : Lectura/escritura JSON.
+-  ` arbol_inventario.py ` : Árbol Binario de Búsqueda para productos.
 - `cola_despacho.py`: Cola de prioridad para órdenes y pila de historial.
 - `mapa_logistico.py`: Grafo y algoritmo de Dijkstra para rutas.
 - `datos/`: JSON de ejemplo (`productos.json`, `ordenes.json`, `mapa.json`).

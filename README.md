@@ -15,5 +15,6 @@ framework: Flask<br>
 
 Integrantes:<br>
 Alejandro Mariani<br>
-Jose Felix Cedeño
+Jose Felix Cedeño<br>
+Diana Yegüez<br>
 

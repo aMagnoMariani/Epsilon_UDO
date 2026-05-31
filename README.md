@@ -9,6 +9,10 @@ El sistema contará con las siguientes especificaciones:<br>
 5. Toda la información (inventario, rutas, pedidos) se guardará automáticamente en archivos
 6. El código estará optimizado para que consuma la menor cantidad de RAM posible<br>
 
+Lenguaje de Programacion: Python<br>
+Herramientas: HTML, CSS, Antigravity IDE<br>
+framework: Flask<br>
+
 Integrantes:<br>
 Alejandro Mariani<br>
 Jose Felix Cedeño

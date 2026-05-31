@@ -1,0 +1,7 @@
+[
+  {"id": 1001, "producto_id": 105, "cantidad": 2, "destino": "Sector_C", "prioridad": 1},
+  {"id": 1002, "producto_id": 102, "cantidad": 1, "destino": "Sector_F", "prioridad": 0},
+  {"id": 1003, "producto_id": 107, "cantidad": 3, "destino": "Sector_D", "prioridad": 1},
+  {"id": 1004, "producto_id": 103, "cantidad": 1, "destino": "Sector_H", "prioridad": 0},
+  {"id": 1005, "producto_id": 109, "cantidad": 5, "destino": "Sector_A", "prioridad": 1}
+]

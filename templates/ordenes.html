@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Órdenes{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <div class="orders-header">
+        <h1>Gestión de Órdenes</h1>
+        <p class="orders-subtitle">Cola de Prioridad (heapq) — Express se despacha primero</p>
+    </div>
+
+    <div class="orders-grid">
+        <!-- Formulario Nueva Orden -->
+        <div class="orders-card">
+            <div class="orders-card-header">
+                <h2>Nueva Orden</h2>
+            </div>
+            <div class="orders-card-body">
+                <form action="{{ url_for('nueva_orden') }}" method="POST" class="orders-form">
+                    <div class="form-group">
+                        <label for="producto_id">Producto</label>
+                        <select name="producto_id" id="producto_id" class="input-field" required>
+                            <option value="">Seleccionar producto...</option>
+                            {% for p in productos %}
+                            <option value="{{ p.id }}">[{{ p.id }}] {{ p.nombre }} — Stock: {{ p.stock }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad</label>
+                        <input type="number" name="cantidad" id="cantidad" class="input-field"
+                               min="1" value="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destino">Destino</label>
+                        <select name="destino" id="destino" class="input-field" required>
+                            <option value="">Seleccionar destino...</option>
+                            {% for d in destinos %}
+                            <option value="{{ d }}">{{ d|replace('_', ' ') }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prioridad">Prioridad</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="prioridad" value="1" checked>
+                                <span class="radio-custom radio-normal"></span>
+                                <span>Normal</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="prioridad" value="0">
+                                <span class="radio-custom radio-express"></span>
+                                <span>Express</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Agregar a la Cola
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cola de Órdenes Pendientes -->
+        <div class="orders-card">
+            <div class="orders-card-header">
+                <h2>Cola de Prioridad</h2>
+                <span class="orders-badge">{{ ordenes|length }} pendientes</span>
+            </div>
+            <div class="orders-card-body">
+                {% if ordenes %}
+                <div class="order-list">
+                    {% for orden in ordenes %}
+                    <div class="order-item {% if orden.prioridad == 0 %}order-express{% else %}order-normal{% endif %}">
+                        <div class="order-priority">
+                            {% if orden.prioridad == 0 %}
+                            <span class="priority-badge priority-express">EXPRESS</span>
+                            {% else %}
+                            <span class="priority-badge priority-normal">Normal</span>
+                            {% endif %}
+                        </div>
+                        <div class="order-details">
+                            <strong>Orden #{{ orden.id }}</strong>
+                            <span class="order-meta">Producto ID: {{ orden.producto_id }} — x{{ orden.cantidad }}</span>
+                            <span class="order-dest">{{ orden.destino|replace('_', ' ') }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No hay órdenes pendientes</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

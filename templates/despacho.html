@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Despacho{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🚀 Despacho de Órdenes</h1>
+    <p class="page-subtitle">Cola de Prioridad → Dijkstra — Ruta de menor costo de combustible</p>
+</div>
+
+{% if orden_despachada %}
+<!-- Resultado del Despacho -->
+<div class="card dispatch-result">
+    <div class="card-header">
+        <h2>✅ Orden Despachada</h2>
+    </div>
+    <div class="card-body">
+        <div class="dispatch-summary">
+            <div class="dispatch-info">
+                <div class="dispatch-order-header">
+                    <span class="priority-badge {% if orden_despachada.prioridad == 0 %}priority-express{% else %}priority-normal{% endif %}">
+                        {% if orden_despachada.prioridad == 0 %}🚀 EXPRESS{% else %}📦 Normal{% endif %}
+                    </span>
+                    <strong>Orden #{{ orden_despachada.id }}</strong>
+                </div>
+                {% if producto_despachado %}
+                <p class="dispatch-product">{{ producto_despachado.nombre }} × {{ orden_despachada.cantidad }}</p>
+                {% endif %}
+                <p class="dispatch-destination">📍 Destino: <strong>{{ orden_despachada.destino|replace('_', ' ') }}</strong></p>
+            </div>
+        </div>
+
+        <!-- Ruta Calculada -->
+        <div class="route-result">
+            <h3>🗺️ Ruta Óptima (Dijkstra)</h3>
+
+            {% if ruta_camino %}
+            <div class="route-path">
+                {% for nodo in ruta_camino %}
+                    <span class="route-node {% if loop.first %}node-start{% elif loop.last %}node-end{% endif %}">
+                        {{ nodo|replace('_', ' ') }}
+                    </span>
+                    {% if not loop.last %}
+                    <span class="route-arrow">→</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="route-cost">
+                <span class="cost-label">Costo Total de Combustible:</span>
+                <span class="cost-value">{{ ruta_costo }} unidades</span>
+            </div>
+
+            {% if ruta_detalles %}
+            <div class="route-details">
+                <h4>Detalle por Tramo</h4>
+                {% for tramo in ruta_detalles %}
+                <div class="tramo-item">
+                    <div class="tramo-nodes">
+                        <span>{{ tramo.desde|replace('_', ' ') }}</span>
+                        <span class="tramo-arrow">→</span>
+                        <span>{{ tramo.hasta|replace('_', ' ') }}</span>
+                    </div>
+                    <div class="tramo-meta">
+                        <span class="tramo-cost">⛽ {{ tramo.costo }} u.</span>
+                        <span class="tramo-desc">{{ tramo.descripcion }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="empty-state">
+                <span class="empty-icon">❌</span>
+                <p>No se encontró ruta hacia {{ orden_despachada.destino|replace('_', ' ') }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Órdenes pendientes + botón despachar -->
+<div class="card">
+    <div class="card-header">
+        <h2>📬 Cola de Prioridad</h2>
+        <span class="card-badge">{{ ordenes|length }} pendientes</span>
+    </div>
+    <div class="card-body">
+        {% if ordenes %}
+        <div class="dispatch-action">
+            <form action="{{ url_for('despachar_siguiente') }}" method="POST">
+                <button type="submit" class="btn btn-dispatch">
+                    🚀 Despachar Orden Más Urgente
+                </button>
+            </form>
+            <p class="dispatch-hint">Se despachará la orden con mayor prioridad (Express primero, luego FIFO)</p>
+        </div>
+
+        <div class="order-list">
+            {% for orden in ordenes %}
+            <div class="order-item {% if orden.prioridad == 0 %}order-express{% else %}order-normal{% endif %} {% if loop.first %}order-next{% endif %}">
+                {% if loop.first %}
+                <span class="next-badge">SIGUIENTE →</span>
+                {% endif %}
+                <div class="order-priority">
+                    {% if orden.prioridad == 0 %}
+                    <span class="priority-badge priority-express">🚀 EXPRESS</span>
+                    {% else %}
+                    <span class="priority-badge priority-normal">📦 Normal</span>
+                    {% endif %}
+                </div>
+                <div class="order-details">
+                    <strong>Orden #{{ orden.id }}</strong>
+                    <span class="order-meta">Producto ID: {{ orden.producto_id }} — x{{ orden.cantidad }}</span>
+                    <span class="order-dest">📍 {{ orden.destino|replace('_', ' ') }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <p>No hay órdenes pendientes para despachar</p>
+            <a href="{{ url_for('ordenes') }}" class="btn btn-secondary">Crear nueva orden</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

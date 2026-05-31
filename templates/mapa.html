@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Mapa Logístico{% endblock %}
+
+{% block head %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<!-- Leaflet Routing Machine CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" crossorigin=""/>
+{% endblock %}
+
+{% block content %}
+
+<!-- Overlay: Formularios Flotantes (Top Left) -->
+<div class="map-overlay">
+    <h3>Calculador de Rutas</h3>
+    <form action="{{ url_for('calcular_ruta_mapa') }}" method="POST">
+        <div class="form-group">
+            <label for="origen">Punto de Origen</label>
+            <select name="origen" id="origen" class="input-field">
+                {% for nodo in nodos %}
+                <option value="{{ nodo }}" {% if origen_seleccionado == nodo %}selected{% endif %}>
+                    {{ nodo|replace('_', ' ') }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="destino">Destino de Entrega</label>
+            <select name="destino" id="destino-mapa" class="input-field" required>
+                <option value="">Seleccionar destino...</option>
+                {% for nodo in nodos %}
+                <option value="{{ nodo }}" {% if destino_seleccionado == nodo %}selected{% endif %}>
+                    {{ nodo|replace('_', ' ') }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Estrategia Logística</label>
+            <div class="strategy-options">
+                <label class="strategy-option {% if not estrategia_seleccionada or estrategia_seleccionada == 'gasolina' %}active{% endif %}">
+                    <input type="radio" name="estrategia" value="gasolina" {% if not estrategia_seleccionada or estrategia_seleccionada == 'gasolina' %}checked{% endif %}>
+                    <span class="strategy-icon">⛽</span>
+                    <span class="strategy-text">Ahorro de gasolina</span>
+                </label>
+                <label class="strategy-option {% if estrategia_seleccionada == 'tiempo' %}active{% endif %}">
+                    <input type="radio" name="estrategia" value="tiempo" {% if estrategia_seleccionada == 'tiempo' %}checked{% endif %}>
+                    <span class="strategy-icon">⏱️</span>
+                    <span class="strategy-text">Ruta más rápida</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="strategy-help">
+            <div class="strategy-badge strategy-economy">⛽ Ahorro de gasolina</div>
+            <div class="strategy-badge strategy-fast">⚡ Ruta directa</div>
+            <p>
+                {% if estrategia_seleccionada == 'tiempo' %}
+                    Se calcula una ruta directa sin paradas intermedias entre origen y destino.
+                {% else %}
+                    Se calcula una ruta económica con paradas solo cuando son necesarias para reducir combustible.
+                {% endif %}
+            </p>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top: 10px;">
+            Encontrar Ruta Óptima
+        </button>
+    </form>
+</div>
+
+<!-- Toast: Resultados (Top Right) -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="map-result-toast" style="transition: opacity 0.4s;">
+                <h4 style="margin-bottom: 5px; color: var(--amazon-navy);">Aviso del Sistema</h4>
+                <p style="font-size: 0.9rem;">{{ message }}</p>
+                {% if ruta_camino is defined and ruta_camino %}
+                <div style="margin-top: 10px; font-size: 0.85rem; padding: 10px; background: #f3f3f3; border-radius: 4px;">
+                    <strong>Costo Total:</strong> {{ ruta_costo }} {{ 'unidades' if estrategia_seleccionada == 'gasolina' else 'minutos' }}
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- El Mapa -->
+<div id="map"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar mapa centrado en Maturín, Estado Monagas
+    var map = L.map('map', {zoomControl: false}).setView([9.7456, -63.1832], 13);
+    
+    // Mover el control de zoom abajo a la derecha
+    L.control.zoom({position: 'bottomright'}).addTo(map);
+
+    // Mapa base limpio de Carto
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 20
+    }).addTo(map);
+
+    const nodos = {{ nodos | tojson }};
+    const coordenadas = {{ coordenadas | tojson }};
+    const aristas = {{ aristas | tojson }};
+    const productos = {{ productos | default([]) | tojson | safe }};
+    const rutaCamino = {{ ruta_camino | default([]) | tojson }};
+    const estrategia = "{{ estrategia_seleccionada or 'gasolina' }}";
+    
+    function isInRoute(from, to) {
+        if (!rutaCamino || rutaCamino.length === 0) return false;
+        for (let i = 0; i < rutaCamino.length - 1; i++) {
+            if ((rutaCamino[i] === from && rutaCamino[i+1] === to) ||
+                (rutaCamino[i] === to && rutaCamino[i+1] === from)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Dibujar líneas de referencia del grafo
+    aristas.forEach(arista => {
+        const p1 = coordenadas[arista.origen];
+        const p2 = coordenadas[arista.destino];
+        if (p1 && p2) {
+            const isRoute = isInRoute(arista.origen, arista.destino);
+            const color = isRoute ? (estrategia === 'tiempo' ? '#6D28D9' : '#0F9D58') : '#D5D9D9';
+            const weight = isRoute ? 4 : 2;
+            const opacity = isRoute ? 0.95 : 0.55;
+
+            const polyline = L.polyline([[p1.lat, p1.lng], [p2.lat, p2.lng]], {
+                color: color,
+                weight: weight,
+                opacity: opacity,
+                dashArray: isRoute ? null : '6, 8'
+            }).addTo(map);
+
+            polyline.bindTooltip(`⛽ ${arista.costo_gasolina} | ⏱️ ${arista.tiempo}m`, {
+                className: 'minimal-tooltip', sticky: true
+            });
+        }
+    });
+
+    let productOptions = '';
+    productos.forEach(p => {
+        productOptions += `<option value="${p.id}">${p.nombre} ($${p.precio})</option>`;
+    });
+
+    // Dibujar marcadores de nodos
+    nodos.forEach(nodo => {
+        const pos = coordenadas[nodo];
+        if (!pos) return;
+
+        const isAlmacen = (nodo === 'Almacen_Central');
+        const inRoute = rutaCamino.includes(nodo);
+        
+        const markerColor = isAlmacen ? '#232F3E' : (inRoute ? '#007185' : '#FFFFFF');
+        const borderColor = isAlmacen ? '#131A22' : (inRoute ? '#007185' : '#0492c2');
+        
+        const circle = L.circleMarker([pos.lat, pos.lng], {
+            radius: isAlmacen ? 11 : 8,
+            fillColor: markerColor,
+            color: borderColor,
+            weight: 3,
+            opacity: 1,
+            fillOpacity: 1
+        }).addTo(map);
+
+        circle.bindTooltip(nodo.replace('_', ' '), {
+            permanent: true, direction: 'bottom', offset: [0, 10],
+            className: 'node-label', opacity: 0.95
+        });
+
+        if (!isAlmacen) {
+            const popupContent = `
+                <div class="buy-box-popup">
+                    <h4>Destino: ${nodo.replace('_', ' ')}</h4>
+                    <form action="/ordenes/nueva" method="POST">
+                        <input type="hidden" name="destino" value="${nodo}">
+                        
+                        <label>Producto a Despachar:</label>
+                        <select name="producto_id" required>
+                            <option value="">Seleccione...</option>
+                            ${productOptions}
+                        </select>
+
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label>Cantidad:</label>
+                                <input type="number" name="cantidad" value="1" min="1" required>
+                            </div>
+                            <div style="flex: 1;">
+                                <label>Prioridad:</label>
+                                <select name="prioridad">
+                                    <option value="1">Normal</option>
+                                    <option value="0">Express</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-buy">Agregar al Carrito de Envío</button>
+                    </form>
+                </div>
+            `;
+            circle.bindPopup(popupContent, { maxWidth: 320 });
+        } else {
+            circle.bindPopup("<div style='padding:5px;'><strong>🏭 Almacén Central</strong><br>Punto base de operaciones en Maturín.</div>");
+        }
+    });
+
+    if (rutaCamino && rutaCamino.length > 1) {
+        const waypoints = rutaCamino.map(n => L.latLng(coordenadas[n].lat, coordenadas[n].lng));
+        const routingControl = L.Routing.control({
+            router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+            show: false,
+            addWaypoints: false,
+            routeWhileDragging: false,
+            fitSelectedRoutes: false,
+            createMarker: () => null,
+            lineOptions: {
+                styles: [{ color: estrategia === 'tiempo' ? '#6D28D9' : '#0F9D58', opacity: 0.95, weight: 7 }],
+                addWaypoints: false
+            }
+        }).addTo(map);
+        routingControl.setWaypoints(waypoints);
+    }
+
+    if (rutaCamino && rutaCamino.length > 0) {
+        const routeCoords = rutaCamino.map(n => [coordenadas[n].lat, coordenadas[n].lng]);
+        const bounds = L.latLngBounds(routeCoords);
+        map.fitBounds(bounds, { paddingBottomRight: [50, 50], paddingTopLeft: [350, 50] });
+    }
+});
+</script>
+<style>
+    .node-label {
+        background: rgba(255,255,255,0.95);
+        border: 1px solid rgba(255,255,255,0.75);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        color: var(--amazon-navy);
+        font-weight: 700;
+        font-size: 0.82rem;
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+    .leaflet-tooltip-bottom:before {
+        border-bottom-color: rgba(255,255,255,0.75);
+    }
+</style>
+{% endblock %}

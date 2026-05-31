@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<div class="ml-container">
+    <!-- Header de búsqueda -->
+    <div class="ml-search-header">
+        <div class="ml-search-bar">
+            <form action="{{ url_for('buscar_producto') }}" method="POST" class="ml-search-form">
+                <input type="number"
+                       name="id"
+                       id="search-id"
+                       placeholder="Buscar por ID de producto..."
+                       class="ml-search-input"
+                       value="{{ id_buscado or '' }}"
+                       required
+                       min="1">
+                <button type="submit" class="ml-search-btn">
+                    🔍
+                </button>
+            </form>
+        </div>
+        <div class="ml-results-count">
+            {{ productos|length }} resultados
+        </div>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="ml-main-layout">
+        <!-- Sidebar de filtros -->
+        <aside class="ml-filters-sidebar">
+            <div class="ml-filter-section">
+                <h3 class="ml-filter-title">Categorías</h3>
+                <div class="ml-filter-options">
+                    <label class="ml-filter-option">
+                        <input type="checkbox" checked>
+                        <span>Todos los productos</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>Electrónica</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>Smartphones</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="ml-filter-section">
+                <h3 class="ml-filter-title">Estado del stock</h3>
+                <div class="ml-filter-options">
+                    <label class="ml-filter-option">
+                        <input type="checkbox" checked>
+                        <span>En stock</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>Stock bajo</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>Stock crítico</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="ml-filter-section">
+                <h3 class="ml-filter-title">Rango de precio</h3>
+                <div class="ml-filter-options">
+                    <label class="ml-filter-option">
+                        <input type="checkbox" checked>
+                        <span>Todos</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>Hasta $500</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>$500 - $1000</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="checkbox">
+                        <span>Más de $1000</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="ml-filter-section">
+                <h3 class="ml-filter-title">Ordenar por</h3>
+                <div class="ml-filter-options">
+                    <label class="ml-filter-option">
+                        <input type="radio" name="sort" checked>
+                        <span>Relevancia</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="radio" name="sort">
+                        <span>Precio (menor a mayor)</span>
+                    </label>
+                    <label class="ml-filter-option">
+                        <input type="radio" name="sort">
+                        <span>Precio (mayor a menor)</span>
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Grid de productos -->
+        <div class="ml-products-grid">
+            {% for p in productos %}
+            <div class="ml-product-card {% if resultado and p.id == resultado.id %}ml-product-highlight{% endif %}">
+                <div class="ml-product-image">
+                    <div class="ml-product-placeholder">
+                        📦
+                    </div>
+                </div>
+                <div class="ml-product-info">
+                    <div class="ml-product-price">${{ "%.2f"|format(p.precio) }}</div>
+                    <div class="ml-product-title">{{ p.nombre }}</div>
+                    <div class="ml-product-meta">
+                        <span class="ml-product-id">ID: {{ p.id }}</span>
+                        {% if p.stock > 20 %}
+                        <span class="ml-stock-badge ml-stock-ok">En Stock</span>
+                        {% elif p.stock > 5 %}
+                        <span class="ml-stock-badge ml-stock-low">Bajo ({{ p.stock }})</span>
+                        {% else %}
+                        <span class="ml-stock-badge ml-stock-critical">Crítico ({{ p.stock }})</span>
+                        {% endif %}
+                    </div>
+                    <div class="ml-product-shipping">
+                        <span class="ml-shipping-icon">🚚</span>
+                        <span>Envío disponible</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Resultado de búsqueda -->
+    {% if resultado %}
+    <div class="ml-search-result-overlay">
+        <div class="ml-search-result-card">
+            <div class="ml-search-result-header">
+                <span class="ml-result-badge ml-result-success">✅ Producto encontrado</span>
+                {% if tiempo_busqueda is defined %}
+                <span class="ml-result-time">⚡ {{ "%.4f"|format(tiempo_busqueda) }} ms</span>
+                {% endif %}
+                <button class="ml-close-result" onclick="this.closest('.ml-search-result-overlay').remove()">×</button>
+            </div>
+            <div class="ml-search-result-body">
+                <div class="ml-result-field">
+                    <span class="ml-result-label">ID:</span>
+                    <span class="ml-result-value">{{ resultado.id }}</span>
+                </div>
+                <div class="ml-result-field">
+                    <span class="ml-result-label">Nombre:</span>
+                    <span class="ml-result-value">{{ resultado.nombre }}</span>
+                </div>
+                <div class="ml-result-field">
+                    <span class="ml-result-label">Precio:</span>
+                    <span class="ml-result-value ml-result-price">${{ "%.2f"|format(resultado.precio) }}</span>
+                </div>
+                <div class="ml-result-field">
+                    <span class="ml-result-label">Stock:</span>
+                    <span class="ml-result-value">{{ resultado.stock }} unidades</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif id_buscado %}
+    <div class="ml-search-result-overlay">
+        <div class="ml-search-result-card ml-result-error">
+            <div class="ml-search-result-header">
+                <span class="ml-result-badge ml-result-error-badge">❌ No encontrado</span>
+                {% if tiempo_busqueda is defined %}
+                <span class="ml-result-time">⚡ {{ "%.4f"|format(tiempo_busqueda) }} ms</span>
+                {% endif %}
+                <button class="ml-close-result" onclick="this.closest('.ml-search-result-overlay').remove()">×</button>
+            </div>
+            <div class="ml-search-result-body">
+                <p>No existe un producto con ID <strong>{{ id_buscado }}</strong> en el inventario.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

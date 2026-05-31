@@ -1,0 +1,12 @@
+[
+  {"id": 101, "nombre": "Teclado Mecánico RGB", "precio": 75.00, "stock": 30},
+  {"id": 102, "nombre": "Monitor 27\" 4K", "precio": 450.00, "stock": 15},
+  {"id": 103, "nombre": "Auriculares Bluetooth", "precio": 35.00, "stock": 80},
+  {"id": 104, "nombre": "Webcam HD 1080p", "precio": 60.00, "stock": 45},
+  {"id": 105, "nombre": "Mouse Ergonómico", "precio": 25.00, "stock": 50},
+  {"id": 106, "nombre": "Hub USB-C 7 puertos", "precio": 40.00, "stock": 60},
+  {"id": 107, "nombre": "SSD 1TB NVMe", "precio": 120.00, "stock": 25},
+  {"id": 108, "nombre": "Memoria RAM 16GB DDR5", "precio": 85.00, "stock": 35},
+  {"id": 109, "nombre": "Cargador Inalámbrico", "precio": 30.00, "stock": 70},
+  {"id": 110, "nombre": "Lámpara LED Escritorio", "precio": 45.00, "stock": 40}
+]

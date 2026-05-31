@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Panel de Control</h1>
+        <p class="dashboard-subtitle">Sistema de Logística de Última Milla</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-value">{{ metricas.total_productos }}</div>
+            <div class="metric-label">Productos</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value">{{ metricas.ordenes_pendientes }}</div>
+            <div class="metric-label">Órdenes Pendientes</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value">{{ metricas.despachos_realizados }}</div>
+            <div class="metric-label">Despachos Realizados</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value">{{ metricas.nodos_mapa }}</div>
+            <div class="metric-label">Nodos del Mapa</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value">{{ metricas.stock_total }}</div>
+            <div class="metric-label">Stock Total</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value">${{ "%.2f"|format(metricas.valor_inventario) }}</div>
+            <div class="metric-label">Valor Inventario</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h2>Acciones Rápidas</h2>
+            </div>
+            <div class="dashboard-card-body">
+                <div class="quick-actions">
+                    <a href="{{ url_for('productos') }}" class="quick-action-btn">
+                        <span class="quick-action-title">Buscar Producto</span>
+                        <span class="quick-action-desc">Árbol BST</span>
+                    </a>
+                    <a href="{{ url_for('ordenes') }}" class="quick-action-btn">
+                        <span class="quick-action-title">Nueva Orden</span>
+                        <span class="quick-action-desc">Cola de Prioridad</span>
+                    </a>
+                    <a href="{{ url_for('despacho') }}" class="quick-action-btn">
+                        <span class="quick-action-title">Despachar</span>
+                        <span class="quick-action-desc">Dijkstra + heapq</span>
+                    </a>
+                    <a href="{{ url_for('historial') }}" class="quick-action-btn">
+                        <span class="quick-action-title">Deshacer</span>
+                        <span class="quick-action-desc">Pila LIFO</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h2>Estructuras de Datos Activas</h2>
+            </div>
+            <div class="dashboard-card-body">
+                <div class="structures-list">
+                    <div class="structure-item">
+                        <div class="structure-badge">BST</div>
+                        <div class="structure-info">
+                            <strong>Árbol Binario de Búsqueda</strong>
+                            <p>Inventario con {{ metricas.total_productos }} productos — Búsqueda O(log n)</p>
+                        </div>
+                    </div>
+                    <div class="structure-item">
+                        <div class="structure-badge">HEAP</div>
+                        <div class="structure-info">
+                            <strong>Cola de Prioridad (heapq)</strong>
+                            <p>{{ metricas.ordenes_pendientes }} órdenes pendientes — Express primero</p>
+                        </div>
+                    </div>
+                    <div class="structure-item">
+                        <div class="structure-badge">STACK</div>
+                        <div class="structure-info">
+                            <strong>Pila de Historial</strong>
+                            <p>{{ metricas.despachos_realizados }} despachos — Deshacer LIFO</p>
+                        </div>
+                    </div>
+                    <div class="structure-item">
+                        <div class="structure-badge">GRAPH</div>
+                        <div class="structure-info">
+                            <strong>Grafo Ponderado + Dijkstra</strong>
+                            <p>{{ metricas.nodos_mapa }} sectores — Ruta de menor costo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

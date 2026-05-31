@@ -1,0 +1,29 @@
+{
+  "nodos": {
+    "Almacen_Central": {"lat": 9.7456, "lng": -63.1832},
+    "Sector_A": {"lat": 9.7532, "lng": -63.1875},
+    "Sector_B": {"lat": 9.7440, "lng": -63.1710},
+    "Sector_C": {"lat": 9.7365, "lng": -63.1895},
+    "Sector_D": {"lat": 9.7484, "lng": -63.1608},
+    "Sector_E": {"lat": 9.7318, "lng": -63.1790},
+    "Sector_F": {"lat": 9.7560, "lng": -63.1960},
+    "Sector_G": {"lat": 9.7420, "lng": -63.2045},
+    "Sector_H": {"lat": 9.7598, "lng": -63.1690}
+  },
+  "aristas": [
+    {"origen": "Almacen_Central", "destino": "Sector_A", "costo_gasolina": 3, "tiempo": 6, "descripcion": "Ruta por la avenida principal hacia Tipuro."},
+    {"origen": "Almacen_Central", "destino": "Sector_B", "costo_gasolina": 4, "tiempo": 7, "descripcion": "Desplazamiento hacia la zona comercial y Av. Bolívar."},
+    {"origen": "Almacen_Central", "destino": "Sector_C", "costo_gasolina": 5, "tiempo": 9, "descripcion": "Camino al sur por la Av. La Guaricha y sector Las Cocuizas."},
+    {"origen": "Sector_A", "destino": "Sector_C", "costo_gasolina": 4, "tiempo": 7, "descripcion": "Eje transversal que conecta Tipuro con la zona sur."},
+    {"origen": "Sector_A", "destino": "Sector_D", "costo_gasolina": 5, "tiempo": 8, "descripcion": "Vía hacia el norte y la Av. Monagas."},
+    {"origen": "Sector_A", "destino": "Sector_E", "costo_gasolina": 7, "tiempo": 11, "descripcion": "Ruta hacia el sur por barrios residenciales."},
+    {"origen": "Sector_B", "destino": "Sector_E", "costo_gasolina": 3, "tiempo": 6, "descripcion": "Conexión desde la zona comercial hacia La Floresta."},
+    {"origen": "Sector_B", "destino": "Sector_G", "costo_gasolina": 4, "tiempo": 8, "descripcion": "Vía hacia el oeste y barrios populares."},
+    {"origen": "Sector_C", "destino": "Sector_D", "costo_gasolina": 3, "tiempo": 5, "descripcion": "Atajo desde el sur al noreste."},
+    {"origen": "Sector_C", "destino": "Sector_F", "costo_gasolina": 4, "tiempo": 6, "descripcion": "Ruta hacia el parque y zona norte."},
+    {"origen": "Sector_D", "destino": "Sector_F", "costo_gasolina": 6, "tiempo": 10, "descripcion": "Camino industrial con tráfico pesado."},
+    {"origen": "Sector_E", "destino": "Sector_F", "costo_gasolina": 5, "tiempo": 8, "descripcion": "Avenida nueva que cruza la ciudad."},
+    {"origen": "Sector_F", "destino": "Sector_H", "costo_gasolina": 3, "tiempo": 5, "descripcion": "Circunvalación sur-norte rápida."},
+    {"origen": "Sector_G", "destino": "Sector_H", "costo_gasolina": 5, "tiempo": 9, "descripcion": "Acceso por la vía oeste con curvas ligeras."}
+  ]
+}

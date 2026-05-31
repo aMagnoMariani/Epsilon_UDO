@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Logística de Última Milla — Optimización de rutas">
+    <title>{% block title %}LogiTrack{% endblock %} — Amazon Logistics Style</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-layout">
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="logo">
+                <span class="logo-text">Epsilon</span>
+                <span class="logo-subtitle" style="margin-left: 5px;">Sistema de Envíos</span>
+            </div>
+            <div class="topbar-actions">
+                <form action="{{ url_for('guardar') }}" method="POST" style="margin: 0;">
+                    <button type="submit" class="btn btn-save">
+                        💾 Guardar Todo
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li>
+                    <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('productos') }}" class="nav-link {% if request.endpoint in ['productos', 'buscar_producto'] %}active{% endif %}">
+                        <span class="nav-icon">📦</span>
+                        <span>Inventario</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ordenes') }}" class="nav-link {% if request.endpoint in ['ordenes', 'nueva_orden'] %}active{% endif %}">
+                        <span class="nav-icon">📋</span>
+                        <span>Órdenes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('despacho') }}" class="nav-link {% if request.endpoint in ['despacho', 'despachar_siguiente'] %}active{% endif %}">
+                        <span class="nav-icon">🚀</span>
+                        <span>Despacho</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('historial') }}" class="nav-link {% if request.endpoint in ['historial', 'deshacer_despacho'] %}active{% endif %}">
+                        <span class="nav-icon">🕐</span>
+                        <span>Historial</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ver_mapa') }}" class="nav-link {% if request.endpoint in ['ver_mapa', 'calcular_ruta_mapa'] %}active{% endif %}">
+                        <span class="nav-icon">🗺️</span>
+                        <span>Mapa Logístico</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content {% if request.endpoint in ['ver_mapa', 'calcular_ruta_mapa'] %}no-padding{% endif %}">
+            
+            {% if request.endpoint not in ['ver_mapa', 'calcular_ruta_mapa'] %}
+            <!-- Flash Messages normally -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}" onclick="this.remove()">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        // Auto-dismiss flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashes = document.querySelectorAll('.flash-message, .map-result-toast');
+            flashes.forEach(function(flash) {
+                setTimeout(function() {
+                    flash.style.opacity = '0';
+                    setTimeout(() => flash.remove(), 400);
+                }, 6000);
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

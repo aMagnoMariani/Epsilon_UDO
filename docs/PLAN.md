@@ -8,4 +8,4 @@
 | Arbol 2-3 |
 | Arbol B |
 | Grafo |
-| Hashing | En el modulo de inventario para encontrar un producto de forma inmediata |
+| Hashing | En el modulo de inventario para encontrar un producto de forma inmediata | Insertar producto(), Buscar producto(), Eliminar producto() | Ninguna | Victoria
